@@ -1,59 +1,31 @@
 "use client";
 
-import { useState } from 'react';
+import Link from 'next/link';
 import './enter.css';
 
-export default function Enter() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    // Simulate a login action
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    // Simulate a logout action
-    setIsLoggedIn(false);
-  };
-
-  return (
-    <div className="enter">
-      <nav className="navbar">
-        <ul className="navbarList">
-          <li>
-            <button className="navButton" onClick={isLoggedIn ? () => alert('Welcome to Home!') : null}>
-              Home
-            </button>
-          </li>
-          {!isLoggedIn ? (
-            <>
-              <li>
-                <button className="navButton" onClick={handleLogin}>
-                  Login
-                </button>
-              </li>
-              <li>
-                <button className="navButton">
-                  Register
-                </button>
-              </li>
-            </>
-          ) : (
-            <li>
-              <button className="navButton" onClick={handleLogout}>
-                Logout
-              </button>
-            </li>
-          )}
-        </ul>
-      </nav>
-      <div className="enterContent">
-        {isLoggedIn ? (
-          <h2>Welcome back! You are logged in.</h2>
-        ) : (
-          <h2>Please login or register to continue.</h2>
-        )}
-      </div>
-    </div>
-  );
+export default function Navbar() {
+    return (
+        <div className="nav">
+            <div className="logo"></div>
+            <div className="search">
+                <input placeholder="Search the schemes..." />
+                <div className="searchBtn"></div>
+            </div>
+            <div className="navLinks">
+                <Link href="/login" className="loginn">Login</Link>
+                <Link href="/Register" className="registerr">Register</Link>
+               
+            </div>
+            <div className="profile">
+                <Link href="/Profile">
+                    <div className="profileIcon"></div>
+                </Link>
+            </div>
+            <div className="backButton">
+                <Link href="./midBody">
+                    <button className="backBtn">Back</button>
+                </Link>
+            </div>
+        </div>
+    );
 }
