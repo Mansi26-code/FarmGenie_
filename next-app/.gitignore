@@ -38,4 +38,10 @@ yarn-error.log*
 next-env.d.ts
 
 /products
+<<<<<<< HEAD
 /public/products
+=======
+/public/products
+
+keys
+>>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b

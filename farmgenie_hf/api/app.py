@@ -48,8 +48,6 @@ import pickle
 
 
 
-<<<<<<< HEAD
-=======
 import mysql.connector
 import pandas as pd
 from tqdm import tqdm
@@ -78,15 +76,12 @@ from langchain import hub
 
 
 
->>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
 ##################### Env variables and LLM setup #########################
 # Load environment variables from .env file
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 cohere_api_key = os.getenv('COHERE_API_KEY')
-<<<<<<< HEAD
-=======
 MAPBOX_API = os.getenv('MAPBOX_API_KEY')
 MYSQL_PASS_KEY = os.getenv('MYSQL_PASS')
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -96,12 +91,11 @@ GOOGLE_MAPS_API = os.getenv('GOOGLE_MAPS_API')
 
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=OPENAI_API_KEY)
-conn = mysql.connector.connect(host='localhost', password=MYSQL_PASS_KEY, user='root', port=33061)
+conn = mysql.connector.connect(host='mysql', password=MYSQL_PASS_KEY, user='root', port=3306)
 cursor = conn.cursor()
 cursor.execute('USE amazon_agricultural_products')
 
 
->>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
 
 # Setting up Cohere API
 import cohere
@@ -385,6 +379,7 @@ def translate(query,src=None, tgt=None):
     The language of source, that is the language of the given input is given as "src" and the target languae to be translated into is given as "tgt". Input query as "query". 
     Translate the query given from "src" to "tgt".
     If the input text is in Hinglish, identify the mixed parts and translate them to fully Hindi.
+    
     "tgt": {tgt}
     "src":{src}
     query: {query}
@@ -419,11 +414,14 @@ def EH_TranslatorRunnable(input):
     src="English"
     tgt = "Hindi"
     query = input['answer']
-    formatted_text = query.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '')
+    # formatted_text = query.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '')
+    formatted_text = query
     formatted_text = textwrap.fill(formatted_text, width=80)
     translated_text = translate(formatted_text, src, tgt)
-    input['answer'] = formatted_text.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '').replace('**\n\n*','').replace('**', '').replace('\n*', '')
-    input['eh_translated_result'] = translated_text.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '').replace('**\n\n*','').replace('**', '').replace('\n*', '')
+    input['answer'] = formatted_text
+    # input['answer'] = formatted_text.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '').replace('**\n\n*','').replace('**', '').replace('\n*', '')
+    # input['eh_translated_result'] = translated_text.replace('\n', ' ').replace('**', '').replace('*\n', '').replace(' *', '').replace('**\n\n*','').replace('**', '').replace('\n*', '')
+    input['eh_translated_result'] = translated_text
     return input
 
 
@@ -912,7 +910,7 @@ def RAGRunnable2(translated_input):
     
     
     def condition(input_data):
-        print("Conditions:", input_data)
+        # print("Conditions:", input_data)
         if(input_data.get("input_query")):
             context = result(query)
             return context
@@ -920,7 +918,7 @@ def RAGRunnable2(translated_input):
         else:
             #Is RAG required?
             res = isRAGRequired(input_data['chat_history'])
-            print(res)
+            # print(res)
             if(res['RESPONSE']['response'].lower() == 'yes'):
                 output_norag = NoRAG(input_data['chat_history'])
                 return output_norag
@@ -939,7 +937,7 @@ def RAGRunnable2(translated_input):
             # vectorstore =  FAISS.from_documents(docs, embedding=OpenAIEmbeddings(api_key=openai_api_key))
             
             # retriever.get_relevant_documents(query)
-            print(query)
+            # print(query)
             # parent_splitter  = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             #     model_name="gpt-4",
             #     chunk_size= 1000,
@@ -999,14 +997,14 @@ def RAGRunnable2(translated_input):
             
             for i in rerank_docs.results:
                 actual_docs.append(final_docs[i.index])
-            print(actual_docs)
-            print(len(actual_docs))
+            # print(actual_docs)
+            # print(len(actual_docs))
             
             return actual_docs
         
         #Query Expansion (Retrieving the results)
         list_of_queries_or_not, isTrue = queryExpansion(query)
-        print("List of queries: ", list_of_queries_or_not)
+        # print("List of queries: ", list_of_queries_or_not)
         if(isTrue == True):
             context_standalone = fetch_relavant_documents(list_of_queries_or_not[0])
             return context_standalone
@@ -1103,14 +1101,14 @@ def RAGRunnable2(translated_input):
     )
     def contextualized_question(input: dict): ## Always a dictionary is passed- Yes
         if input.get("chat_history"):
-            print("Inside 1")
+            # print("Inside 1")
             res = contextualize_q_chain.invoke({
                 "query": query,
                  "chat_history": chat_history
             })
             return {"chat_history": res}
         else:
-            print("Inside 2")
+            # print("Inside 2")
             return {"input_query": input["query"]}
 
     rag_chain = (
@@ -1350,8 +1348,6 @@ ensemble_retriever = EnsembleRetriever(retrievers=[bm25_retriever, retriever],
 
 
 
-<<<<<<< HEAD
-=======
 if conn.is_connected():
     print("Ok")
 
@@ -1359,7 +1355,7 @@ if conn.is_connected():
 def insert_reviews():
 
     reviews = pd.read_excel('reviews-updated.xlsx')
-    print(reviews.isnull().sum())
+    # print(reviews.isnull().sum())
     for i in tqdm(range(reviews.shape[0])):
 
         sql = "INSERT INTO product_reviews (score, title, url, dateAndLocation, description, isVerified, ASIN, Sentiment) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
@@ -1462,7 +1458,7 @@ def get_shortest_route(query: str, coordinates: Optional[List[float]] = None, pr
     res = res.replace('```', '').replace("\n", '').replace('json','').strip()
     json_res = json.loads(res)
     sql = json_res['Response']['answer']
-    print(sql)
+    # print(sql)
     # sql = "SELECT Latitude, Longitude FROM product_details  WHERE "
     cursor.execute(sql)
     
@@ -1472,9 +1468,9 @@ def get_shortest_route(query: str, coordinates: Optional[List[float]] = None, pr
     mylocation = ""
     points = []
     # print(len(results))
-    print(results)
+    # print(results)
     for row in results:
-        print(row)
+        # print(row)
         asin, latitude, longitude = row
         # print(latitude)
         # print(longitude)
@@ -1515,7 +1511,7 @@ def get_shortest_route(query: str, coordinates: Optional[List[float]] = None, pr
     
     #Sorting by duration
     sorted_list = sorted(final_points, key=lambda x:x[0])
-    print(sorted_list)
+    # print(sorted_list)
     
     return sorted_list
 
@@ -1813,7 +1809,7 @@ def convo(query, agent_executor):
 
     global chat_history
 
-    print(query)
+    # print(query)
     result = agent_executor.invoke({"input": query, "chat_history": chat_history})
 
     chat_history.extend(
@@ -1851,7 +1847,7 @@ def get_query(userQuery: str):
         chat_history = []
     
     query = unquote(userQuery)
-    print("Query is: ", query)
+    # print("Query is: ", query)
     # print(llm.invoke("How many letters in the word educa"))
     result, chat_history = convo(query, agent_executer)
     
@@ -1873,7 +1869,6 @@ def get_query(userQuery: str):
     # get_relavent_items("Fertilizers")
 
 
->>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
 @api.get('/')
 def index():
     return 'Running'
@@ -1883,13 +1878,8 @@ def get_query(userQuery: str):
     
     global chat_history
     
-<<<<<<< HEAD
-    if os.path.exists('data/pickle files/chat_history.pkl') and os.path.getsize('data/pickle files/chat_history.pkl') > 0:
-        with open('data/pickle files/chat_history.pkl', 'rb') as f:
-=======
     if os.path.exists('data/pickle_files/chat_history.pkl') and os.path.getsize('data/pickle_files/chat_history.pkl') > 0:
         with open('data/pickle_files/chat_history.pkl', 'rb') as f:
->>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
             chat_history = pickle.load(f)
 
     
@@ -1909,11 +1899,7 @@ def get_query(userQuery: str):
 
     result = pipeline.invoke(input=query)
     
-<<<<<<< HEAD
-    pickle.dump(chat_history, open('data/pickle files/chat_history.pkl', 'wb'))
-=======
     pickle.dump(chat_history, open('data/pickle_files/chat_history.pkl', 'wb'))
->>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
 
     # print(chat_history)
     return result

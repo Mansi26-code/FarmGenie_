@@ -1,4 +1,9 @@
 node_modules
 .next
 .git
+<<<<<<< HEAD
 .env
+=======
+.env
+keys
+>>>>>>> 31321a7f6224e7d61b76d54baedbfcfbb28db89b
